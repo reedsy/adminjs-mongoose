@@ -192,7 +192,7 @@ class Resource extends BaseResource {
       const value = parsedParams[fullPath]
 
       // this handles missing ObjectIDs
-      if (instance === 'ObjectID') {
+      if (instance === 'ObjectID' || instance === 'ObjectId') {
         if (value === '') {
           parsedParams[fullPath] = null
         } else if (value) {
