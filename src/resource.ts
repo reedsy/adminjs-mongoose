@@ -73,6 +73,7 @@ class Resource extends BaseResource {
     return this.MongooseModel.estimatedDocumentCount()
   }
 
+  // eslint-disable-next-line default-param-last
   async find(filters = {}, { limit = 20, offset = 0, sort = {} }: FindOptions) {
     const { direction, sortBy } = sort
     const sortingParam = {
@@ -82,7 +83,9 @@ class Resource extends BaseResource {
       .find(convertFilter(filters), {}, {
         skip: offset, limit, sort: sortingParam,
       })
-    return mongooseObjects.map((mongooseObject) => new BaseRecord(Resource.stringifyId(mongooseObject), this))
+    return mongooseObjects.map(
+      (mongooseObject) => new BaseRecord(Resource.stringifyId(mongooseObject), this),
+    )
   }
 
   async findOne(id:string) {
