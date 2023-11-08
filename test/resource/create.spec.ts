@@ -18,6 +18,7 @@ describe('Resource #create', () => {
     const resource = new Resource(User)
 
     await expect(() => resource.create({ email: '', passwordHash: '' })).rejects.toThrow(ValidationError)
+    throw new Error('It should fail')
   })
 
   it('throws validation error for record with cast errors in nested schema', async () => {
