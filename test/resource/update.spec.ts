@@ -1,4 +1,4 @@
-import Resource from '../../src/resource'
+import { Resource } from '../test-adapter'
 import { Article } from '../utils/models'
 
 describe('Resource #update', () => {

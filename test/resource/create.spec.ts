@@ -1,8 +1,8 @@
 import { ValidationError } from 'adminjs'
 import { factory } from 'factory-girl'
-import Resource from '../../src/resource'
 import validUserRecord from '../fixtures/valid-user-record'
 import { Article, Pesel, User } from '../utils/models'
+import { Resource } from '../test-adapter'
 
 describe('Resource #create', () => {
   it('creates new record with valid parameters', async () => {

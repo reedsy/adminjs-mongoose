@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
-import Resource from '../../src/resource'
 import { User } from '../utils/models'
 import Property from '../../src/property'
+import { Resource } from '../test-adapter'
 
 describe('Resource #properties', () => {
   let resource

@@ -1,10 +1,14 @@
 import { BaseDatabase } from 'adminjs'
 import type { Connection } from 'mongoose'
+import { IAdapterOptions } from './i-adapter-options'
+import { IResourceConstructor } from './i-resource-constructor'
 
-import Resource from './resource'
-
-class Database extends BaseDatabase {
+export abstract class Database extends BaseDatabase {
   private readonly connection: Connection
+
+  protected abstract ResourceClass: IResourceConstructor;
+
+  protected abstract options: IAdapterOptions
 
   constructor(connection) {
     super(connection)
@@ -17,9 +21,7 @@ class Database extends BaseDatabase {
 
   resources() {
     return this.connection.modelNames().map((name) => (
-      new Resource(this.connection.model(name))
+      new this.ResourceClass(this.connection.model(name))
     ))
   }
 }
-
-export default Database
