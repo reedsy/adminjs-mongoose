@@ -1,10 +1,6 @@
 import escape from 'escape-regexp'
 import mongoose from 'mongoose'
-
-const FIND_ONE_FIELDS = [
-  '_id',
-  'uuid',
-] as const
+import { IAdapterOptions } from '../i-adapter-options'
 
 /**
  * Changes AdminJS's {@link Filter} to an object acceptible by a mongoose query.
@@ -12,12 +8,14 @@ const FIND_ONE_FIELDS = [
  * @param {Filter} filter
  * @private
  */
-export const convertFilter = (filter) => {
+export const convertFilter = (filter, adapterOptions: IAdapterOptions) => {
   if (!filter) {
     return {}
   }
 
-  for (const field of FIND_ONE_FIELDS) {
+  const { findOneFields } = adapterOptions
+
+  for (const field of findOneFields) {
     if (field in filter && filter[field]) {
       return { [field]: filter[field].value }
     }

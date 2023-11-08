@@ -7,6 +7,7 @@ import { convertFilter } from './utils/convert-filter'
 import { createValidationError } from './utils/create-validation-error'
 import { createDuplicateError } from './utils/create-duplicate-error'
 import { createCastError } from './utils/create-cast-error'
+import { IAdapterOptions } from './i-adapter-options'
 
 import errors from './utils/errors'
 
@@ -16,8 +17,10 @@ const { MONGOOSE_CAST_ERROR, MONGOOSE_DUPLICATE_ERROR_CODE, MONGOOSE_VALIDATION_
  * Adapter for mongoose resource
  * @private
  */
-class Resource extends BaseResource {
+export abstract class Resource extends BaseResource {
   private readonly dbType: string = 'mongodb'
+
+  protected abstract options: IAdapterOptions;
 
   /**
      * @typedef {Object} MongooseModel
@@ -67,8 +70,8 @@ class Resource extends BaseResource {
   }
 
   async count(filters = null) {
-    if (Object.keys(convertFilter(filters)).length > 0) {
-      return this.MongooseModel.countDocuments(convertFilter(filters))
+    if (Object.keys(convertFilter(filters, this.options)).length > 0) {
+      return this.MongooseModel.countDocuments(convertFilter(filters, this.options))
     }
     return this.MongooseModel.estimatedDocumentCount()
   }
@@ -85,7 +88,7 @@ class Resource extends BaseResource {
     }
 
     const mongooseObjects = await this.MongooseModel
-      .find(convertFilter(filters), {}, {
+      .find(convertFilter(filters, this.options), {}, {
         skip: offset, limit, sort: sortingParam,
       })
     return mongooseObjects.map(
@@ -248,5 +251,3 @@ class Resource extends BaseResource {
     return parsedParams
   }
 }
-
-export default Resource

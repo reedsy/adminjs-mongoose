@@ -1,7 +1,7 @@
 import { BaseRecord, Filter } from 'adminjs'
 import { factory } from 'factory-girl'
-import Resource from '../../src/resource'
 import { User } from '../utils/models'
+import { Resource } from '../test-adapter'
 
 describe('Resource #find', () => {
   it('returns first n items', async () => {

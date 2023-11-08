@@ -1,4 +1,4 @@
-import Resource from '../../src/resource'
+import { Resource } from '../test-adapter'
 import { User } from '../utils/models'
 
 describe('Resource #name', () => {

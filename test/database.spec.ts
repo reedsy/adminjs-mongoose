@@ -1,13 +1,13 @@
 import mongoose from 'mongoose'
-import MongooseDatabase from '../src/database'
-import Resource from '../src/resource'
+import { Database } from './test-adapter'
+import { Resource } from '../src/resource'
 
 describe('Database', () => {
   describe('#resources', () => {
     let resources: Resource[]
 
     beforeEach(() => {
-      resources = new MongooseDatabase(mongoose.connection).resources()
+      resources = new Database(mongoose.connection).resources()
     })
 
     it('return all resources', () => {
