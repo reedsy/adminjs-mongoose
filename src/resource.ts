@@ -76,9 +76,14 @@ class Resource extends BaseResource {
   // eslint-disable-next-line default-param-last
   async find(filters = {}, { limit = 20, offset = 0, sort = {} }: FindOptions) {
     const { direction, sortBy } = sort
-    const sortingParam = {
-      [sortBy]: direction,
+    let sortingParam: any
+
+    if (sortBy) {
+      sortingParam = {
+        [sortBy]: direction,
+      }
     }
+
     const mongooseObjects = await this.MongooseModel
       .find(convertFilter(filters), {}, {
         skip: offset, limit, sort: sortingParam,
