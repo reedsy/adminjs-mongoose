@@ -39,5 +39,5 @@ jobs:
         run: npm run test
       - name: Tag
         if: |
-          github.event_name == 'push' && github.ref == 'refs/heads/main'
+          github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: ./tag.sh
