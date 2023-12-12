@@ -1,5 +1,5 @@
 {
-  "name": "@adminjs/mongoose",
+  "name": "@reedsy/adminjs-mongoose",
   "version": "4.0.0-reedsy-1.0.0",
   "description": "Mongoose adapter for adminjs",
   "type": "module",
