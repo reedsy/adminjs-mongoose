@@ -2,8 +2,7 @@ name: CI/CD
 on:
   push:
     branches:
-    - main
-    - add-ci-cd
+    - master
   pull_request_target:
 
 jobs:
