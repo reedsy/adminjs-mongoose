@@ -24,6 +24,8 @@ jobs:
         NODE_AUTH_TOKEN: ${{ secrets.REEDSY_BOT_PERSONAL_ACCESS_TOKEN }}
     - name: Post-install
       run: npm rebuild && npm run prepare --if-present
+    - name: Build
+      run: npm run build
     - name: Publish
       run: npm publish
       env:
