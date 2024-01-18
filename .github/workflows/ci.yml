@@ -37,24 +37,8 @@ jobs:
         run: npm run build
       - name: test
         run: npm run test
-
-  release:
-    needs:
-    - test
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        registry-url: 'https://npm.pkg.github.com'
-    - name: Install
-      run: npm install
-    - name: Build
-      run: npm run build
-    - name: Release
-      run: ./release.sh
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        run: ./release.sh
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
