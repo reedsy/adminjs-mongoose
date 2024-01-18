@@ -1,4 +1,5 @@
-name: CI/CD
+name: CI
+
 on:
   push:
     branches:
@@ -7,7 +8,6 @@ on:
 
 jobs:
   test:
-    name: Test
     runs-on: ubuntu-latest
     services:
       mongo:
@@ -17,18 +17,18 @@ jobs:
     steps:
       - name: Checkout (push)
         if: ${{ github.event_name == 'push' }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       # Separate checkout action for pull_request_target, which needs to
       # explicitly checkout the SHA
       - name: Checkout (pull request)
         if: ${{ github.event_name == 'pull_request_target' }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Setup
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '20.9'
+          node-version: '20.x'
       - name: Install
         run: npm install
       - name: Lint
@@ -37,7 +37,24 @@ jobs:
         run: npm run build
       - name: test
         run: npm run test
-      - name: Tag
-        if: |
-          github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: ./tag.sh
+
+  release:
+    needs:
+    - test
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        registry-url: 'https://npm.pkg.github.com'
+    - name: Install
+      run: npm install
+    - name: Build
+      run: npm run build
+    - name: Release
+      run: ./release.sh
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
