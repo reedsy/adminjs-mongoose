@@ -87,8 +87,11 @@ class Resource extends BaseResource {
     return mongooseObjects.map((mongooseObject) => new BaseRecord(Resource.stringifyId(mongooseObject), this))
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<BaseRecord | null> {
     const mongooseObject = await this.MongooseModel.findById(id)
+    if (!mongooseObject) {
+      return null
+    }
     return new BaseRecord(Resource.stringifyId(mongooseObject), this)
   }
 
