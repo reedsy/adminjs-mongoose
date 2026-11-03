@@ -66,6 +66,14 @@ class Resource extends BaseResource {
     return this.properties().find((property) => property.path() === name) ?? null
   }
 
+  /**
+   * Set `custom: { exactMatch: true }` on a property's options to filter it
+   * by equality, e.g. for indexed string IDs that would otherwise use a regex.
+   */
+  private isExactMatch = (path: string): boolean => (
+    !!this._decorated?.getPropertyByKey(path)?.options.custom?.exactMatch
+  )
+
   async count(filters = null) {
     const query = convertFilter(filters, this.isExactMatch)
     if (Object.keys(query).length > 0) {
@@ -87,14 +95,6 @@ class Resource extends BaseResource {
     // eslint-disable-next-line max-len
     return mongooseObjects.map((mongooseObject) => new BaseRecord(Resource.stringifyId(mongooseObject), this))
   }
-
-  /**
-   * Set `custom: { exactMatch: true }` on a property's options to filter it
-   * by equality, e.g. for indexed string IDs that would otherwise use a regex.
-   */
-  private isExactMatch = (path: string): boolean => (
-    !!this._decorated?.getPropertyByKey(path)?.options.custom?.exactMatch
-  )
 
   async findOne(id: string): Promise<BaseRecord | null> {
     const mongooseObject = await this.MongooseModel.findById(id)
