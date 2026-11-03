@@ -69,6 +69,7 @@ class Resource extends BaseResource {
   /**
    * Set `custom: { exactMatch: true }` on a property's options to filter it
    * by equality, e.g. for indexed string IDs that would otherwise use a regex.
+   * Search uses it too, so a title property set this way loses partial matching.
    */
   private isExactMatch = (path: string): boolean => (
     !!this._decorated?.getPropertyByKey(path)?.options.custom?.exactMatch
