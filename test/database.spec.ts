@@ -11,7 +11,7 @@ describe('Database', () => {
     })
 
     it('return all resources', () => {
-      expect(resources.length).toEqual(3)
+      expect(resources.length).toEqual(4)
     })
   })
 })

@@ -1,4 +1,4 @@
-import { Filter } from 'adminjs'
+import AdminJS, { Filter } from 'adminjs'
 import { factory } from 'factory-girl'
 import Resource from '../../src/resource.js'
 import { User } from '../utils/models.js'
@@ -27,5 +27,17 @@ describe('Resource #count', () => {
     const counterRecords = await resource.count(filterOutAllRecords)
 
     expect(counterRecords).toEqual(0)
+  })
+
+  it('counts exactMatch properties by equality', async () => {
+    await factory.create('user', { email: 'john@doe.com' })
+    await factory.create('user', { email: 'john@doe.com.au' })
+    resource.assignDecorator(new AdminJS(), {
+      properties: { email: { custom: { exactMatch: true } } },
+    })
+
+    const counted = await resource.count(new Filter({ email: 'john@doe.com' }, resource))
+
+    expect(counted).toEqual(1)
   })
 })
