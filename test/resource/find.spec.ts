@@ -1,7 +1,8 @@
-import { BaseRecord, Filter } from 'adminjs'
+import AdminJS, { BaseRecord, Filter } from 'adminjs'
 import { factory } from 'factory-girl'
+import mongoose from 'mongoose'
 import Resource from '../../src/resource.js'
-import { User } from '../utils/models.js'
+import { StringIdDocument, User } from '../utils/models.js'
 
 describe('Resource #find', () => {
   it('returns first n items', async () => {
@@ -30,5 +31,55 @@ describe('Resource #find', () => {
 
     expect(returnedItems.length).toEqual(1)
     expect(returnedItems[0]).toBeInstanceOf(BaseRecord)
+  })
+
+  describe('with exactMatch properties', () => {
+    const exactMatch = { custom: { exactMatch: true } }
+
+    beforeEach(async () => {
+      await factory.create('user', { email: 'john@doe.com' })
+      await factory.create('user', { email: 'john@doe.com.au' })
+    })
+
+    it('matches strings by equality instead of a regex', async () => {
+      const resource = new Resource(User)
+      resource.assignDecorator(new AdminJS(), { properties: { email: exactMatch } })
+
+      const filter = new Filter({ email: 'john@doe.com' }, resource)
+      const returnedItems = await resource.find(filter, {})
+
+      expect(returnedItems.map((item) => item.params.email)).toEqual(['john@doe.com'])
+    })
+
+    it('uses an operator-shaped value as the operand, not as an operator', async () => {
+      const resource = new Resource(User)
+      resource.assignDecorator(new AdminJS(), { properties: { email: exactMatch } })
+
+      const filter = new Filter({}, resource)
+      filter.filters.email = { path: 'email', property: resource.property('email'), value: { $ne: 'nobody' } }
+
+      await expect(resource.find(filter, {})).rejects.toThrow(mongoose.Error.CastError)
+    })
+
+    it('matches a string _id', async () => {
+      await StringIdDocument.create([{ _id: 'abc' }, { _id: 'abcd' }])
+      const resource = new Resource(StringIdDocument)
+      resource.assignDecorator(new AdminJS(), { properties: { _id: exactMatch } })
+
+      const filter = new Filter({ _id: 'abc' }, resource)
+      const returnedItems = await resource.find(filter, {})
+
+      expect(returnedItems.map((item) => item.id())).toEqual(['abc'])
+    })
+
+    it('keeps the regex for other properties', async () => {
+      const resource = new Resource(User)
+      resource.assignDecorator(new AdminJS(), { properties: { passwordHash: exactMatch } })
+
+      const filter = new Filter({ email: 'john@doe.com' }, resource)
+      const returnedItems = await resource.find(filter, {})
+
+      expect(returnedItems).toHaveLength(2)
+    })
   })
 })

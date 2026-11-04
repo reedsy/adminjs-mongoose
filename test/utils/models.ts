@@ -44,6 +44,10 @@ export const Article = mongoose.model('Article', new mongoose.Schema({
   },
 }))
 
+export const StringIdDocument = mongoose.model('StringIdDocument', new mongoose.Schema({
+  _id: String,
+}))
+
 // export const { User, Article, Pesel }: Record<string, mongoose.Model<any>> = globalAny
 
 factory.define('user', User, {

@@ -66,9 +66,19 @@ class Resource extends BaseResource {
     return this.properties().find((property) => property.path() === name) ?? null
   }
 
+  /**
+   * Set `custom: { exactMatch: true }` on a property's options to filter it
+   * by equality, e.g. for indexed string IDs that would otherwise use a regex.
+   * Search uses it too, so a title property set this way loses partial matching.
+   */
+  private isExactMatch = (path: string): boolean => (
+    !!this._decorated?.getPropertyByKey(path)?.options.custom?.exactMatch
+  )
+
   async count(filters = null) {
-    if (Object.keys(convertFilter(filters)).length > 0) {
-      return this.MongooseModel.countDocuments(convertFilter(filters))
+    const query = convertFilter(filters, this.isExactMatch)
+    if (Object.keys(query).length > 0) {
+      return this.MongooseModel.countDocuments(query)
     }
     return this.MongooseModel.estimatedDocumentCount()
   }
@@ -80,7 +90,7 @@ class Resource extends BaseResource {
       [sortBy]: direction,
     }
     const mongooseObjects = await this.MongooseModel
-      .find(convertFilter(filters), {}, {
+      .find(convertFilter(filters, this.isExactMatch), {}, {
         skip: offset, limit, sort: sortingParam,
       })
     // eslint-disable-next-line max-len

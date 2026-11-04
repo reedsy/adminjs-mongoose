@@ -5,14 +5,22 @@ import mongoose from 'mongoose'
  * Changes AdminJS's {@link Filter} to an object acceptible by a mongoose query.
  *
  * @param {Filter} filter
+ * @param {Function} isExactMatch whether a path is compared by equality, whatever its type
  * @private
  */
-export const convertFilter = (filter) => {
+// eslint-disable-next-line no-unused-vars
+export const convertFilter = (filter, isExactMatch: (path: string) => boolean = () => false) => {
   if (!filter) {
     return {}
   }
   return filter.reduce((memo, filterProperty) => {
     const { property, value } = filterProperty
+    if (isExactMatch(property.name())) {
+      return {
+        [property.name()]: { $eq: value },
+        ...memo,
+      }
+    }
     switch (property.type()) {
     case 'string':
       return {
