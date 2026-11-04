@@ -1,5 +1,6 @@
 import AdminJS, { BaseRecord, Filter } from 'adminjs'
 import { factory } from 'factory-girl'
+import mongoose from 'mongoose'
 import Resource from '../../src/resource.js'
 import { StringIdDocument, User } from '../utils/models.js'
 
@@ -48,6 +49,16 @@ describe('Resource #find', () => {
       const returnedItems = await resource.find(filter, {})
 
       expect(returnedItems.map((item) => item.params.email)).toEqual(['john@doe.com'])
+    })
+
+    it('uses an operator-shaped value as the operand, not as an operator', async () => {
+      const resource = new Resource(User)
+      resource.assignDecorator(new AdminJS(), { properties: { email: exactMatch } })
+
+      const filter = new Filter({}, resource)
+      filter.filters.email = { path: 'email', property: resource.property('email'), value: { $ne: 'nobody' } }
+
+      await expect(resource.find(filter, {})).rejects.toThrow(mongoose.Error.CastError)
     })
 
     it('matches a string _id', async () => {

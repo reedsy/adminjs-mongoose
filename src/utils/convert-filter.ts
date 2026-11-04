@@ -17,7 +17,7 @@ export const convertFilter = (filter, isExactMatch: (path: string) => boolean = 
     const { property, value } = filterProperty
     if (isExactMatch(property.name())) {
       return {
-        [property.name()]: value,
+        [property.name()]: { $eq: value },
         ...memo,
       }
     }
